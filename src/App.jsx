@@ -1,6 +1,6 @@
 import React from 'react';
-
-function App() {
+import "./index.css"
+function App() {s
     return (
         <div>Hello vite!..</div>
     );
