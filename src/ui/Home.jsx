@@ -1,3 +1,5 @@
+import {Link} from "react-router-dom";
+
 function Home() {
   return (
     <div>
@@ -6,6 +8,9 @@ function Home() {
         <br />
         Straight out of the oven, straight to you.
       </h1>
+        <Link to={"/menu"}>
+            Open menu
+        </Link>
     </div>
   );
 }
