@@ -1,6 +1,11 @@
 import {Form, redirect, useActionData, useNavigation} from "react-router-dom";
 import {createOrder} from "../../services/apiRestaurant.js";
 import {useSelector} from "react-redux";
+import {clearItems, getCart, getCartPrice} from "../cart/cartSlice.js";
+import Button from "../../ui/Button.jsx";
+import {useState} from "react";
+import store from "../../store.js";
+import {formatCurrency} from "../../utils/helpers.js";
 
 // https://uibakery.io/regex-library/phone-number
 const isValidPhone = (str) =>
@@ -8,6 +13,7 @@ const isValidPhone = (str) =>
     str
   );
 
+/*
 const fakeCart = [
   {
     pizzaId: 12,
@@ -31,14 +37,19 @@ const fakeCart = [
     totalPrice: 15,
   },
 ];
+*/
 
 function CreateOrder() {
-  // const [withPriority, setWithPriority] = useState(false);
-  const cart = fakeCart;
+  const [withPriority, setWithPriority] = useState(false);
+  const cart = useSelector(getCart);
   const actionData = useActionData()
   const navigation = useNavigation()
   const isSubmitting = navigation.state === "submitting"
   const username = useSelector(state => state.user.username)
+  const totalCartPrice = useSelector(getCartPrice)
+  const priorityPrice = withPriority ? totalCartPrice * 0.2 : 0
+  const totalPrice = totalCartPrice + priorityPrice
+
 
   return (
     <div className="px-4 py-6">
@@ -79,15 +90,20 @@ function CreateOrder() {
             type="checkbox"
             name="priority"
             id="priority"
-            // value={withPriority}
-            // onChange={(e) => setWithPriority(e.target.checked)}
+            value={withPriority}
+            onChange={(e) => setWithPriority(e.target.checked)}
           />
           <label className="font-medium" htmlFor="priority">Want to yo give your order priority?</label>
         </div>
 
         <div>
+            {/*Use below input only for sending data to action function :) */}
             <input type="hidden" name="cart" value={JSON.stringify(cart)}/>
-          <button disabled={isSubmitting}>Order now</button>
+          <Button type="primary" disabled={isSubmitting}>
+            {
+              isSubmitting ? "placing order..." : `Order now ${formatCurrency(totalPrice)}`
+            }
+          </Button>
         </div>
       </Form>
     </div>
@@ -101,7 +117,7 @@ export async function action({request}) {
   const order = {
       ...data,
       cart: JSON.parse(data.cart),
-      priority: data.priority === "on"
+      priority: data.priority === "true"
   }
 
   const errors = {}
@@ -117,6 +133,9 @@ export async function action({request}) {
 
   const newOrder = await createOrder(order)
 
+  // Clear items manually, because can't use useDispatch here.
+  // Do NOT overuse
+  store.dispatch(clearItems())
   return redirect(`/order/${newOrder.id}`)
 }
 
