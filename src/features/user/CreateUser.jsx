@@ -2,6 +2,7 @@ import { useState } from 'react';
  import { useDispatch } from "react-redux";
 import { updateUsername } from "./userSlice.js";
 import { useNavigate } from "react-router-dom";
+import Button from "../../ui/Button.jsx";
 
 function CreateUser() {
   const [username, setUsername] = useState('');
@@ -31,7 +32,7 @@ function CreateUser() {
 
       {username !== '' && (
         <div>
-          <button>Start ordering</button>
+          <Button type="primary">Start ordering</Button>
         </div>
       )}
     </form>
