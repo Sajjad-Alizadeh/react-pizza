@@ -99,8 +99,9 @@ function CreateOrder() {
               <span className="absolute top-[3px] right-[3px] z-50 md:right-[5px] md:top-[5px]">
                 <Button type="small"
                         disabled={isAddressLoading}
-                        onClick={()=> {
-                      dispatch(fetchAddress())
+                        onClick={(e)=> {
+                          e.preventDefault()
+                          dispatch(fetchAddress())
                     }}>
                   Get position
                 </Button>
